@@ -5,6 +5,10 @@
 #include "myLib.h"
 #include "dma.h"
 #include "text.h"
+#include "play.h"
+#include "win.h"
+#include "lose.h"
+#include "coin.h"
 #include <stdio.h>
 
 void delay(int n);
@@ -23,13 +27,17 @@ int main(void)
 {
 	REG_DISPCNT = MODE3 | BG_ENABLE;
 
+	//fillScreen(play);
+	drawRect(0,0,W,H,bgColor);
+	sprintf(buffer, "PRESS ENTER TO PLAY!");
+	drawString(H / 2 - 4, W/2-60, buffer, WHITE);
+	while (! KEY_DOWN_NOW(BUTTON_START));
+
 	newGame();
 
 	/* TODO */
-	// draw, then pause after resetBall is called before resuming
-	// when resetting, repaint all screen black
-	// have win condition
-	// have reset condition
+	// add pauses in certain places
+	// https://www.google.com/search?q=generate+random+integers+in+c
 	while(1) 
 	{
 		scoreCondition = checkScoreCondition(ball);
@@ -42,14 +50,18 @@ int main(void)
 			sprintf(buffer, "%d      %d", user.score, comp.score);
 			drawString(2, W/2-24, buffer, WHITE);
 			if (user.score >= 5) {
-				//go to you win page
+				drawRect(topMargin,0,W,H,bgColor);
 				sprintf(buffer, "YOU WIN!");
 				drawString(H / 2 - 4, W/2-24, buffer, YELLOW);
+				//fillScreen(win);
+				while (! KEY_DOWN_NOW(BUTTON_SELECT));
 			}
 			if (comp.score >= 5) {
-				//go to you lose page
+				drawRect(topMargin,0,W,H,bgColor);
 				sprintf(buffer, "YOU LOSE.");
 				drawString(H / 2 - 4, W/2-24, buffer, RED);
+				//fillScreen(lose);
+				while (! KEY_DOWN_NOW(BUTTON_SELECT));
 			}
 			//wait like 2 seconds
 		}

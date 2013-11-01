@@ -76,8 +76,8 @@ typedef struct
 
 /* Function Prototypes */
 BALL resetBall(BALL ball);
+void drawPixel(int r, int c, u16 color);
 void drawRect(int r, int c, int width, int height, u16 color);
-void setPixel(int r, int c, u16 color);
 void fillScreen(u16 color);
 int hitsPaddle(BALL ball, PADDLE paddle);
 int checkScoreCondition(BALL ball);

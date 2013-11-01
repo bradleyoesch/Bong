@@ -13,6 +13,11 @@ BALL resetBall(BALL ball) {
 	ball.c = W / 2 - ball.s / 2;
 	return ball;
 }
+
+void drawPixel(int r, int c, u16 color) {
+	videoBuffer[OFFSET(r, c, W)] = color;
+}
+
 void drawRect(int r, int c, int width, int height, u16 color) {
 	for (int row=0; row<height; row++) {
 		DMA[3].src = &color;
@@ -21,14 +26,10 @@ void drawRect(int r, int c, int width, int height, u16 color) {
 	}
 }
 
-void setPixel(int r, int c, u16 color) {
-	videoBuffer[OFFSET(r, c, W)] = color;
-}
-
 void fillScreen(u16 color) { //or u16 *img
 	DMA[3].src = &color; // = img, assuming imgSize=videoBufferSize
 	DMA[3].dst = videoBuffer;
-	DMA[3].cnt = W | DMA_ON | DMA_SOURCE_FIXED;
+	DMA[3].cnt = (W*H) | DMA_ON | DMA_SOURCE_FIXED;
 }
 
 //only called when ball is on correct column
