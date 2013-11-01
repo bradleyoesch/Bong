@@ -27,7 +27,7 @@ int main(void)
 {
 	REG_DISPCNT = MODE3 | BG_ENABLE;
 
-	//fillScreen(play);
+	// fillPicture(&play);
 	drawRect(0,0,W,H,bgColor);
 	sprintf(buffer, "PRESS ENTER TO PLAY!");
 	drawString(H / 2 - 4, W/2-60, buffer, WHITE);
@@ -53,14 +53,14 @@ int main(void)
 				drawRect(topMargin,0,W,H,bgColor);
 				sprintf(buffer, "YOU WIN!");
 				drawString(H / 2 - 4, W/2-24, buffer, YELLOW);
-				//fillScreen(win);
+				// fillPicture(&win);
 				while (! KEY_DOWN_NOW(BUTTON_SELECT));
 			}
 			if (comp.score >= 5) {
 				drawRect(topMargin,0,W,H,bgColor);
 				sprintf(buffer, "YOU LOSE.");
 				drawString(H / 2 - 4, W/2-24, buffer, RED);
-				//fillScreen(lose);
+				// fillPicture(&lose);
 				while (! KEY_DOWN_NOW(BUTTON_SELECT));
 			}
 			//wait like 2 seconds
@@ -131,7 +131,7 @@ void newGame() {
 
 	user.w = 5;
 	user.h = 20;
-	user.r = topMargin;
+	user.r = H / 2 - user.h / 2;
 	user.rOld = user.r;
 	user.rD = 1;
 	user.c = margin;
@@ -143,7 +143,7 @@ void newGame() {
 
 	comp.w = 5;
 	comp.h = 20;
-	comp.r = topMargin;
+	comp.r = H / 2 - comp.h / 2;
 	comp.rOld = comp.r;
 	comp.rD = 1;
 	comp.c = W - comp.w - margin;

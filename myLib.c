@@ -26,8 +26,8 @@ void drawRect(int r, int c, int width, int height, u16 color) {
 	}
 }
 
-void fillScreen(u16 color) { //or u16 *img
-	DMA[3].src = &color; // = img, assuming imgSize=videoBufferSize
+void fillPicture(short unsigned int img) { //or u16 *img
+	DMA[3].src = &img;
 	DMA[3].dst = videoBuffer;
 	DMA[3].cnt = (W*H) | DMA_ON | DMA_SOURCE_FIXED;
 }
