@@ -2,57 +2,59 @@
  * 10/23/13
  */
 
-#include "mylib.h"
+#include "myLib.h"
 #include "dma.h"
+#include "text.h"
+#include <stdio.h>
 
 void delay(int n);
+void newGame();
+
+u16 bgColor = BLACK;
+int margin = 5;
+int topMargin = 11;
+int scoreCondition;
+char buffer[41];
+PADDLE user;
+PADDLE comp;
+BALL ball;
 
 int main(void) 
 {
 	REG_DISPCNT = MODE3 | BG_ENABLE;
-	u16 bgColor = BLACK;
-	drawRect(0,0,W,H,bgColor);
 
-	PADDLE user;
-		user.w = 5;
-		user.h = 20;
-		user.r = 0;
-		user.rOld = user.r;
-		user.rD = 1;
-		user.c = 5;
-		user.cOld = user.c;
-		user.color = WHITE;
-		user.topBound = 0;
-		user.botBound = H-user.h;
-	
-	PADDLE comp;
-		comp.w = 5;
-		comp.h = 20;
-		comp.r = 0;
-		comp.rOld = comp.r;
-		comp.rD = 1;
-		comp.c = W-user.c-comp.w;
-		comp.cOld = comp.c;
-		comp.color = WHITE;
-		comp.topBound = 0;
-		comp.botBound = H-comp.h;
+	newGame();
 
-	BALL ball;
-		ball.r = 0;
-		ball.rOld = ball.r;
-		ball.rD = 1;
-		ball.c = user.c+user.w;
-		ball.cOld = ball.c;
-		ball.cD = 1;
-		ball.s = 5;
-		ball.color = WHITE;
-		ball.leftBound = user.c+user.w; //can't go farther left than left paddle
-		ball.rightBound = comp.c-ball.s;
-		ball.topBound = 0;
-		ball.botBound = H-ball.s;
-
+	/* TODO */
+	// draw, then pause after resetBall is called before resuming
+	// when resetting, repaint all screen black
+	// have win condition
+	// have reset condition
 	while(1) 
 	{
+		scoreCondition = checkScoreCondition(ball);
+		if (scoreCondition != 0) {
+			if (scoreCondition == 1) user.score++;
+			if (scoreCondition == -1) comp.score++;
+			drawRect(ball.r, ball.c, ball.s, ball.s, bgColor); //draw over old position
+			ball = resetBall(ball);
+			drawRect(0, 0, W, topMargin, bgColor); //draw over score
+			sprintf(buffer, "%d      %d", user.score, comp.score);
+			drawString(2, W/2-24, buffer, WHITE);
+			if (user.score >= 5) {
+				//go to you win page
+				sprintf(buffer, "YOU WIN!");
+				drawString(H / 2 - 4, W/2-24, buffer, YELLOW);
+			}
+			if (comp.score >= 5) {
+				//go to you lose page
+				sprintf(buffer, "YOU LOSE.");
+				drawString(H / 2 - 4, W/2-24, buffer, RED);
+			}
+			//wait like 2 seconds
+		}
+
+		// sets old r/c to curr r/c to save it somewhere when we keydown
 		ball.rOld = ball.r;
 		ball.cOld = ball.c;
 		user.rOld = user.r;
@@ -72,90 +74,90 @@ int main(void)
 				user.r = user.botBound;
 		}
 
+		if(KEY_DOWN_NOW(BUTTON_SELECT)) {
+			newGame();
+		}
+
 		waitForVblank();
 
 		ball.r += ball.rD;
 		ball.c += ball.cD;
 		if (ball.r >= ball.botBound || ball.r <= ball.topBound)
 			ball.rD *= -1;
-		if (ball.c >= ball.rightBound || ball.c <= ball.leftBound)
-			ball.cD *= -1;
-		drawRect(ball.rOld, ball.cOld, ball.s, ball.s, bgColor);
-		drawRect(ball.r, ball.c, ball.s, ball.s, ball.color);
+		if (ball.c == user.c+user.w)
+			ball.cD *= hitsPaddle(ball, user);
+		if (ball.c == comp.c-ball.s)
+			ball.cD *= hitsPaddle(ball, comp);
+		drawRect(ball.rOld, ball.cOld, ball.s, ball.s, bgColor); //draw over old position
+		// if (ball.c < 0) {
+		// 	drawRect(ball.r, 0, ball.s+ball.c, ball.s, ball.color); //draw new ball
+		// } else {
+			drawRect(ball.r, ball.c, ball.s, ball.s, ball.color); //draw new ball
+		// }
 
-		drawRect(user.rOld, user.cOld, user.w, user.h, bgColor);
-		drawRect(user.r, user.c, user.w, user.h, user.color);
+		drawRect(user.rOld, user.cOld, user.w, user.h, bgColor); //draw over old position
+		drawRect(user.r, user.c, user.w, user.h, user.color); //draw new user paddle
 
-		comp.r = (ball.s / 2) + ball.r - (comp.h / 2);
+		comp.r = (ball.s / 2) + ball.r - (comp.h / 2); //always puts the computer paddle directly centered on ball. you can't win.
 		if (comp.r <= comp.topBound)
-				comp.r = comp.topBound;
+			comp.r = comp.topBound;
 		if (comp.r >= comp.botBound)
-				comp.r = comp.botBound;
-		drawRect(comp.rOld, comp.cOld, comp.w, comp.h, bgColor);
-		drawRect(comp.r, comp.c, comp.w, comp.h, comp.color);
+			comp.r = comp.botBound;
+		drawRect(comp.rOld, comp.cOld, comp.w, comp.h, bgColor); //draw over old position
+		drawRect(comp.r, comp.c, comp.w, comp.h, comp.color); //draw new computer paddle
 
-		/*if(KEY_DOWN_NOW(BUTTON_UP))
-		{
-			size++;
-			if(size > 150)
-				size = 150;
-		}
-		if(KEY_DOWN_NOW(BUTTON_DOWN))
-		{
-			size--;
-			if(size<3)
-				size = 3;
-		}
-		
-		for(i=0; i<NUMOBJS; i++)
-		{
-			cur = &objs[i];
-			oldcur = &oldobjs[i];
-			
-			cur->row = cur->row + cur->rd;
-			cur->col += cur->cd;
-			if(cur->row < 0)
-			{
-				cur->row = 0;
-				cur->rd = -cur->rd;
-			}
-			if(cur->row > SCREENHEIGHT-1-size+1)
-			{
-				cur->row = SCREENHEIGHT-1-size+1;
-				cur->rd = -cur->rd;
-				score++;
-			}
-			if(cur->col < 0)
-			{
-				cur->col = 0;
-				cur->cd = -cur->cd;
-			}
-			if(cur->col > 239-size+1)
-			{
-				cur->col = 239-size+1;
-				cur->cd = -cur->cd;
-			}
-		}
 
-		sprintf(buffer, "Score: %d", score);
-		waitForVblank();
-		for(i=0; i<NUMOBJS; i++)
-		{
-			oldcur = &oldobjs[i];
-			drawRect(oldcur->row, oldcur->col, oldsize, oldsize, BLACK);  // Erase the ball
-			
-			oldobjs[i] = objs[i];
-		}
-		for(i=0; i<NUMOBJS; i++)
-		{
-			cur = &objs[i];
-			drawRect(cur->row, cur->col, size, size, cur->color);
-		}  
-		oldsize = size;
-		drawRect(150, 48, 8, 24, BLACK);
-		drawString(150, 5, buffer, RED);*/
 	} // While loop
 	return 0;
+}
+
+/**
+ * Restarts or starts game fresh.
+ */
+void newGame() {
+	drawRect(0,0,W,H,bgColor);
+
+	user.w = 5;
+	user.h = 20;
+	user.r = topMargin;
+	user.rOld = user.r;
+	user.rD = 1;
+	user.c = margin;
+	user.cOld = user.c;
+	user.color = WHITE;
+	user.topBound = 0 + topMargin;
+	user.botBound = H - user.h - margin;
+	user.score = 0;
+
+	comp.w = 5;
+	comp.h = 20;
+	comp.r = topMargin;
+	comp.rOld = comp.r;
+	comp.rD = 1;
+	comp.c = W - comp.w - margin;
+	comp.cOld = comp.c;
+	comp.color = WHITE;
+	comp.topBound = 0 + topMargin;
+	comp.botBound = H - user.h - margin;
+	comp.score = 0;
+
+	ball.s = 5;
+	ball.r = H / 2 - ball.s / 2;
+	ball.rOld = ball.r;
+	ball.rD = 1;
+	ball.c = W / 2 - ball.s / 2;
+	ball.cOld = ball.c;
+	ball.cD = -1;
+	ball.color = WHITE;
+	ball.leftBound = 0;
+	ball.rightBound = W - ball.s;
+	ball.topBound = 0 + topMargin;
+	ball.botBound = H - ball.s - margin;
+	
+	ball = resetBall(ball);
+	scoreCondition = 0;
+	sprintf(buffer, "%d      %d", user.score, comp.score);
+	drawString(2, W/2-24, buffer, WHITE);
 }
 
 /** delays drawing to a speed humans can better deal with */
@@ -163,8 +165,7 @@ void delay(int n)
 {
 	int i = 0;
 	volatile int x=0;
-	for(i=0; i<n*10000; i++)
-	{
+	for(i=0; i<n*10000; i++) {
 		x++;
 	}
 }

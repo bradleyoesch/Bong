@@ -19,17 +19,18 @@ typedef struct
 	
 	int topBound;	// least r can be
 	int botBound;	// greatest r can be
+	int score;
 } PADDLE;
 
 typedef struct
 {
+	int s;		// size (width and height)
 	int r;		// row
 	int rOld;	// old row value for painting over
 	int rD;		// change in row
 	int c;		// column
 	int cOld;	// old col value for painting over
 	int cD;		// change in col
-	int s;		// size (width and height)
 	u16 color;	// color
 
 	int leftBound;	// least c can be
@@ -52,6 +53,7 @@ typedef struct
 #define	WHITE RGB(29,29,29)
 #define	TRUE_BLACK RGB(0,0,0)
 #define BLACK RGB(2,2,2)
+#define DARK_GREY RGB(25,25,25)
 #define RED RGB(29,2,2)
 #define YELLOW RGB(30,29,4)
 #define BROWN RGB(13,11,7)
@@ -73,6 +75,10 @@ typedef struct
 #define BUTTONS *(volatile unsigned int *)0x4000130
 
 /* Function Prototypes */
+BALL resetBall(BALL ball);
 void drawRect(int r, int c, int width, int height, u16 color);
+void setPixel(int r, int c, u16 color);
 void fillScreen(u16 color);
+int hitsPaddle(BALL ball, PADDLE paddle);
+int checkScoreCondition(BALL ball);
 void waitForVblank();
