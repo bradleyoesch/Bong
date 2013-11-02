@@ -46,6 +46,8 @@ typedef struct
 
 #define W 240
 #define H 160
+#define MARGIN 5
+#define TOP_MARGIN 11
 #define OFFSET(r, c, rowlen) ((r)*(rowlen) + (c))
 #define SCANLINECOUNTER *(volatile unsigned short *)0x4000006
 
@@ -76,9 +78,12 @@ typedef struct
 
 /* Function Prototypes */
 BALL resetBall(BALL ball);
+int getRandomNumber(int min, int max);
 void drawPixel(int r, int c, u16 color);
 void drawRect(int r, int c, int width, int height, u16 color);
-void fillPicture(short unsigned int img);
+void fillPicture(const u16 *img);
+void drawPicture(u16 *img);
 int hitsPaddle(BALL ball, PADDLE paddle);
+PADDLE realignPaddle(PADDLE paddle);
 int checkScoreCondition(BALL ball);
 void waitForVblank();

@@ -4,14 +4,19 @@
 
 #include "myLib.h"
 #include "dma.h"
+#include <stdlib.h>
 
 u16 *videoBuffer = (u16*)0x6000000;
 
 /* Functions */
 BALL resetBall(BALL ball) {
-	ball.r = H / 2 - ball.s / 2;
+	ball.r = getRandomNumber(TOP_MARGIN, H - MARGIN - ball.s); //H / 2 - ball.s / 2;
 	ball.c = W / 2 - ball.s / 2;
 	return ball;
+}
+
+int getRandomNumber(int min, int max) {
+	return min + rand() / (RAND_MAX / (max - min + 1) + 1);
 }
 
 void drawPixel(int r, int c, u16 color) {
@@ -26,10 +31,18 @@ void drawRect(int r, int c, int width, int height, u16 color) {
 	}
 }
 
-void fillPicture(short unsigned int img) { //or u16 *img
+void fillPicture(const u16 *img) { //or u16 *img
 	DMA[3].src = &img;
 	DMA[3].dst = videoBuffer;
-	DMA[3].cnt = (W*H) | DMA_ON | DMA_SOURCE_FIXED;
+	DMA[3].cnt = (W*H) | DMA_ON;
+}
+
+void drawPicture(u16 *img) {
+	for (int r=0; r<H; r++) {
+		DMA[3].src = &img;
+		DMA[3].dst = &videoBuffer[OFFSET(r, H, W)];
+		DMA[3].cnt = W | DMA_ON | DMA_SOURCE_FIXED;
+	}
 }
 
 //only called when ball is on correct column
@@ -40,6 +53,14 @@ int hitsPaddle(BALL ball, PADDLE paddle) {
 		return -1;
 	else
 		return 1;
+}
+
+PADDLE realignPaddle(PADDLE paddle) {
+	if (paddle.r <= paddle.topBound)
+		paddle.r = paddle.topBound;
+	if (paddle.r >= paddle.botBound)
+		paddle.r = paddle.botBound;
+	return paddle;
 }
 
 int checkScoreCondition(BALL ball) {
