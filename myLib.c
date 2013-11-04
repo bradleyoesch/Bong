@@ -9,17 +9,6 @@
 u16 *videoBuffer = (u16*)0x6000000;
 
 /* Functions */
-BALL resetBall(BALL ball) {
-	ball.r = getRandomNumber(TOP_MARGIN, H - MARGIN - ball.s); //H / 2 - ball.s / 2;
-	ball.c = W / 2 - ball.s / 2;
-<<<<<<< HEAD
-	ball.rD *= -1;
-	ball.cD *= -1;
-=======
->>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
-	return ball;
-}
-
 int getRandomNumber(int min, int max) {
 	return min + rand() / (RAND_MAX / (max - min + 1) + 1);
 }
@@ -42,19 +31,11 @@ void fillPicture(const u16 *img) { //or u16 *img
 	DMA[3].cnt = (W*H) | DMA_ON;
 }
 
-<<<<<<< HEAD
 void drawPicture(int r, int c, int width, int height, const u16 *img) {
 	for (int i=0; i<height; i++) {
 		DMA[3].src = img + r+i * width;
 		DMA[3].dst = videoBuffer + r+i * W;
 		DMA[3].cnt = width | DMA_ON;
-=======
-void drawPicture(u16 *img) {
-	for (int r=0; r<H; r++) {
-		DMA[3].src = &img;
-		DMA[3].dst = &videoBuffer[OFFSET(r, H, W)];
-		DMA[3].cnt = W | DMA_ON | DMA_SOURCE_FIXED;
->>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 	}
 }
 
@@ -62,10 +43,7 @@ void drawPicture(u16 *img) {
 int hitsPaddle(BALL ball, PADDLE paddle) {
 	int rangeLow = paddle.r - ball.s;
 	int rangeHigh = paddle.r + paddle.h + ball.s;
-	if (ball.r >= rangeLow && ball.r <= rangeHigh)
-		return -1;
-	else
-		return 1;
+	return (ball.r >= rangeLow && ball.r <= rangeHigh) ? -1 : 1;
 }
 
 PADDLE realignPaddle(PADDLE paddle) {
@@ -74,6 +52,14 @@ PADDLE realignPaddle(PADDLE paddle) {
 	if (paddle.r >= paddle.botBound)
 		paddle.r = paddle.botBound;
 	return paddle;
+}
+
+BALL resetBall(BALL ball) {
+	ball.r = getRandomNumber(TOP_MARGIN + 1, H - MARGIN - ball.s -1); //H / 2 - ball.s / 2;
+	ball.c = W / 2 - ball.s / 2;
+	ball.rD *= -1;
+	ball.cD *= -1;
+	return ball;
 }
 
 int checkScoreCondition(BALL ball) {
@@ -85,15 +71,12 @@ int checkScoreCondition(BALL ball) {
 		return 0;
 }
 
-<<<<<<< HEAD
 int centerTextWidth(const char *str) {
     const char *s;
     for (s = str; *s; s++);
     return (W - (s - str)*6) / 2;
 }
 
-=======
->>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 void waitForVblank() {
     while(SCANLINECOUNTER > H);
     while(SCANLINECOUNTER < H);

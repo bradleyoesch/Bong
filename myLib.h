@@ -3,10 +3,7 @@
  */
 
 typedef unsigned short u16;
-<<<<<<< HEAD
-=======
 extern u16 *videoBuffer;
->>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 
 /* Objects of sorts */
 typedef struct
@@ -62,10 +59,7 @@ typedef struct
 #define RED RGB(29,2,2)
 #define YELLOW RGB(30,29,4)
 #define BROWN RGB(13,11,7)
-<<<<<<< HEAD
 #define GREEN RGB(2,29,2)
-=======
->>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 #define BLUE RGB(0,21,30)
 #define DARK_BLUE RGB(1,13,16)
 
@@ -84,21 +78,14 @@ typedef struct
 #define BUTTONS *(volatile unsigned int *)0x4000130
 
 /* Function Prototypes */
-BALL resetBall(BALL ball);
 int getRandomNumber(int min, int max);
 void drawPixel(int r, int c, u16 color);
 void drawRect(int r, int c, int width, int height, u16 color);
 void fillPicture(const u16 *img);
-<<<<<<< HEAD
 void drawPicture(int r, int c, int width, int height, const u16 *img);
-int hitsPaddle(BALL ball, PADDLE paddle);
-PADDLE realignPaddle(PADDLE paddle);
-int checkScoreCondition(BALL ball);
 int centerTextWidth(const char *str);
-=======
-void drawPicture(u16 *img);
 int hitsPaddle(BALL ball, PADDLE paddle);
 PADDLE realignPaddle(PADDLE paddle);
+BALL resetBall(BALL ball);
 int checkScoreCondition(BALL ball);
->>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 void waitForVblank();
