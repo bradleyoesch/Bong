@@ -11,6 +11,7 @@
 #include "coin.h"
 #include <stdio.h>
 
+<<<<<<< HEAD
 /* Function Prototypes */
 void newGame();
 int paused();
@@ -26,6 +27,12 @@ const char *messageWin = "YOU WIN!";
 const char *messageLose = "YOU LOSE.";
 const char *messagePoints = "FIRST TO FIVE POINTS WINS!";
 
+=======
+void delay(int n);
+void newGame();
+
+u16 bgColor = BLACK;
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 int scoreCondition;
 char buffer[41];
 BALL ball;
@@ -36,6 +43,7 @@ int main(void)
 {
 	REG_DISPCNT = MODE3 | BG_ENABLE;
 
+<<<<<<< HEAD
 	drawRect(0,0,W,H,bgColor);
 	sprintf(buffer, messageStart);
 	drawString(H / 2 - 23, centerTextWidth(messageStart), buffer, WHITE);
@@ -47,10 +55,21 @@ int main(void)
 	drawString(H / 2 + 7, centerTextWidth(messageB), buffer, WHITE);
 	sprintf(buffer, messagePoints);
 	drawString(H / 2 + 17, centerTextWidth(messagePoints), buffer, WHITE);
+=======
+	// drawRect(0,0,W,H,bgColor);
+	// sprintf(buffer, "PRESS ENTER TO PLAY!");
+	// drawString(H / 2 - 4, W/2-60, buffer, WHITE);
+	// drawPicture(play);
+	// fillPicture(play);
+	DMA[3].src = play;
+	DMA[3].dst = videoBuffer;
+	DMA[3].cnt = (W*H) | DMA_ON;
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 	while (! KEY_DOWN_NOW(BUTTON_START));
 
 	newGame();
 
+<<<<<<< HEAD
 	while (1) 
 	{
 		if(KEY_DOWN_NOW(BUTTON_SELECT)) {
@@ -59,6 +78,21 @@ int main(void)
 		if(KEY_DOWN_NOW(BUTTON_B)) {
 			paused();
 		}
+=======
+	/* TODO */
+	// add coin
+	while(1) 
+	{
+		/*for (int row=0; row<COIN_HEIGHT; row++) {
+			DMA[3].src = coin;
+			DMA[3].dst = &videoBuffer[OFFSET(row+2, 1000, 5)];
+			DMA[3].cnt = COIN_WIDTH | DMA_ON | DMA_DESTINATION_INCREMENT;
+		}*/
+
+		if(KEY_DOWN_NOW(BUTTON_SELECT)) {
+			newGame();
+		}
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 
 		scoreCondition = checkScoreCondition(ball);
 		if (scoreCondition != 0) {
@@ -76,20 +110,40 @@ int main(void)
 			sprintf(buffer, "%d      %d", user.score, comp.score);
 			drawString(2, W/2-24, buffer, WHITE);
 			if (user.score >= 5) {
+<<<<<<< HEAD
 				drawRect(TOP_MARGIN,0,W,H,bgColor);
 				sprintf(buffer, messageWin);
 				drawString(H / 2 - 8, centerTextWidth(messageWin), buffer, GREEN);
 				sprintf(buffer, messageSelect);
 				drawString(H / 2 + 2, centerTextWidth(messageSelect), buffer, GREEN);
+=======
+				// drawRect(TOP_MARGIN,0,W,H,bgColor);
+				// sprintf(buffer, "YOU WIN!");
+				// drawString(H / 2 - 4, W / 2-24, buffer, YELLOW);
+				// fillPicture(win);
+				DMA[3].src = win;
+				DMA[3].dst = videoBuffer;
+				DMA[3].cnt = (W*H) | DMA_ON;
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 				while (! KEY_DOWN_NOW(BUTTON_SELECT));
 				newGame();
 			}
 			if (comp.score >= 5) {
+<<<<<<< HEAD
 				drawRect(TOP_MARGIN,0,W,H,bgColor);
 				sprintf(buffer, messageLose);
 				drawString(H / 2 - 8, centerTextWidth(messageLose), buffer, RED);
 				sprintf(buffer, messageSelect);
 				drawString(H / 2 + 2, centerTextWidth(messageSelect), buffer, RED);
+=======
+				// drawRect(TOP_MARGIN,0,W,H,bgColor);
+				// sprintf(buffer, "YOU LOSE");
+				// drawString(H / 2 - 4, W / 2-24, buffer, RED);
+				// fillPicture(lose);
+				DMA[3].src = lose;
+				DMA[3].dst = videoBuffer;
+				DMA[3].cnt = (W*H) | DMA_ON;
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 				while (! KEY_DOWN_NOW(BUTTON_SELECT));
 				newGame();
 			}
@@ -136,6 +190,10 @@ int main(void)
 		int ballDirection = ball.r - ball.rOld; //if -1, moving down, if 1, moving up
 		comp.rD = (chance == 0) ? ballDirection * -1 : ballDirection;
 		comp.r += comp.rD;
+<<<<<<< HEAD
+=======
+		// comp.r = (ball.s / 2) + ball.r - (comp.h / 2); //always puts the computer paddle directly centered on ball. you can't win.
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 		comp = realignPaddle(comp);
 		drawRect(comp.rOld, comp.cOld, comp.w, comp.h, bgColor); //draw over old position
 		drawRect(comp.r, comp.c, comp.w, comp.h, comp.color); //draw new computer paddle
@@ -154,7 +212,11 @@ void newGame() {
 	ball.s = 5;
 	ball.r = H / 2 - ball.s / 2;
 	ball.rOld = ball.r;
+<<<<<<< HEAD
 	ball.rD = -2;
+=======
+	ball.rD = 2;
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 	ball.c = W / 2 - ball.s / 2;
 	ball.cOld = ball.c;
 	ball.cD = -2;
@@ -199,6 +261,7 @@ void newGame() {
 	delay(25);
 }
 
+<<<<<<< HEAD
 int paused() {
 	delay(25);
 	while (1) {
@@ -208,6 +271,8 @@ int paused() {
 	}
 }
 
+=======
+>>>>>>> 13b4693a2d932b4f047d52339439ea3887600462
 void delay(int n)
 {
 	int i = 0;
